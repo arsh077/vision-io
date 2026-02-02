@@ -1,0 +1,8 @@
+
+{
+  "name": "Gemini Screen Vision",
+  "description": "Capture any part of your screen, extract text with OCR, and get instant AI analysis using Gemini. Perfect for solving problems, translating text, or explaining complex concepts from images.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
