@@ -5,6 +5,8 @@ export interface AnalysisResult {
   extractedText: string;
   aiResponse: string;
   imageUrl: string;
+  questionType?: QuestionType;
+  mcqAnswer?: string;
 }
 
 export enum AppState {
@@ -14,6 +16,19 @@ export enum AppState {
   PROCESSING_OCR = 'PROCESSING_OCR',
   THINKING = 'THINKING',
   ERROR = 'ERROR'
+}
+
+export enum QuestionType {
+  MCQ = 'MCQ',
+  DESCRIPTIVE = 'DESCRIPTIVE',
+  UNKNOWN = 'UNKNOWN'
+}
+
+export interface PopupData {
+  answer: string;
+  questionType: QuestionType;
+  mcqOption?: string;
+  explanation?: string;
 }
 
 declare global {

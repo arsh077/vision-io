@@ -2,7 +2,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { geminiService } from './services/geminiService';
 import Overlay from './components/Overlay';
-import { AppState, AnalysisResult } from './types';
+import AnswerPopup from './components/AnswerPopup';
+import { AppState, AnalysisResult, PopupData } from './types';
+import { createPopupData } from './utils/questionAnalyzer';
 import {
   Camera,
   RotateCcw,
@@ -26,6 +28,7 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isPanelExpanded, setIsPanelExpanded] = useState(true);
+  const [popupData, setPopupData] = useState<PopupData | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -170,6 +173,13 @@ const App: React.FC = () => {
       };
 
       setResults(prev => [newResult, ...prev]);
+
+      // Show popup with answer suggestion
+      const popup = createPopupData(extractedText, aiResponse);
+      if (popup) {
+        setPopupData(popup);
+      }
+
       setAppState(AppState.IDLE);
     } catch (err: any) {
       setError(err.message || "Analysis failed.");
@@ -341,8 +351,8 @@ const App: React.FC = () => {
                     <button
                       onClick={() => copyToClipboard(res.aiResponse, res.id)}
                       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${copiedId === res.id
-                          ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                          : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
+                        ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                        : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
                         }`}
                     >
                       {copiedId === res.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -420,6 +430,10 @@ const App: React.FC = () => {
 
       {appState === AppState.SELECTING && (
         <Overlay onCapture={handleAreaCapture} onCancel={stopCapture} />
+      )}
+
+      {popupData && (
+        <AnswerPopup data={popupData} onClose={() => setPopupData(null)} />
       )}
 
       <style>{`
